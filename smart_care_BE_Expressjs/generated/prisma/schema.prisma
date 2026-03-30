@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String?
+  ava       String?
+  descript  String?   @db.LongText
+  address   String?   @db.LongText
+  birthdate DateTime?
+  sex       Int       @default(1)
+  mail      String?   @unique
+  phone     String?   @unique
+  pass      String?
+  role      Int // 0 is admin, 1 is reception, 2 is doctor, 3 is client
+
+  date01 DateTime? @default(now())
+  date02 DateTime?
+
+  specialtyID Int?
+  specialty   Specialty? @relation(fields: [specialtyID], references: [id])
+
+  clientBookings Booking[] @relation("ClientBookings")
+  doctorBookings Booking[] @relation("DoctorBookings")
+}
+
+model Booking {
+  id Int @id @default(autoincrement())
+
+  title    String  @db.LongText
+  descript String? @db.LongText
+
+  bookingDate DateTime
+
+  status Int @default(1) // 1: Booked, 2: Checked-in (Waiting), 3: Completed
+
+  date01 DateTime? @default(now())
+  date02 DateTime?
+
+  clientID Int
+  client   User @relation("ClientBookings", fields: [clientID], references: [id])
+
+  doctorID Int?
+  doctor   User? @relation("DoctorBookings", fields: [doctorID], references: [id])
+
+  note Note[]
+
+  recordID Int?    @unique
+  record   Record? @relation(fields: [recordID], references: [id])
+}
+
+model Record {
+  id Int @id @default(autoincrement())
+
+  bookingID Int
+  booking   Booking?
+
+  title    String @db.LongText
+  descript String @db.LongText
+}
+
+model Note {
+  id Int @id @default(autoincrement())
+
+  title    String  @db.LongText
+  descript String? @db.LongText
+
+  date01 DateTime? @default(now())
+  date02 DateTime?
+
+  bookingID Int
+  booking   Booking @relation(fields: [bookingID], references: [id])
+}
+
+model Specialty {
+  id   Int    @id @default(autoincrement())
+  name String @db.LongText
+
+  doctor User[]
+
+  date01 DateTime? @default(now())
+  date02 DateTime?
+}

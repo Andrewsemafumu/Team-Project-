@@ -1,0 +1,48 @@
+.container_check {
+  --input-focus: rgb(0, 0, 0);
+  --input-out-of-focus: rgb(202, 202, 202);
+  --bg-color: rgb(0, 0, 0);
+  --bg-color-alt: rgb(202, 202, 202);
+  font-weight: bold;
+  position: relative;
+  cursor: pointer;
+}
+
+.container_check input {
+  position: absolute;
+  opacity: 0;
+}
+
+.checkmark {
+  width: 23px;
+  height: 25px;
+  position: relative;
+  top: 0;
+  left: 0;
+  border: 2px solid var(--main-color);
+  border-radius:5px;
+  box-shadow: 4px 4px var(--main-color);
+  background-color: var(--input-out-of-focus);
+  transition: all 0.3s;
+}
+
+.container_check input:checked ~ .checkmark {
+  background-color: rgb(246, 246, 246);
+}
+
+.checkmark:after {
+  content: "";
+  width: 7px;
+  height: 15px;
+  position: absolute;
+  top: 2px;
+  left: 8px;
+  display: none;
+  border: solid var(--bg-color);
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+
+.container_check input:checked ~ .checkmark:after {
+  display: block;
+}
