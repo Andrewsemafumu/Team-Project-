@@ -7,6 +7,9 @@ const server = http.createServer(app);
 const port = process.env.PORT
 const cors = require("cors");
 const middleware = require("./middleware/middelware");
+const authController = require("./controller/auth.controller");
+const specialtyController = require("./controller/specialty.controller");
+const UserController = require("./controller/user.controller");
 
 require("./config/connectSql")
 
@@ -43,11 +46,16 @@ const ROOT_URL = "/api/v1/smartcare"
 // allow all roles
 app.use(middleware.checkRole([]));
 
-// route for public (include not auth)
+// route for get all specialty http://localhost:3000/api/v1/smartcare/specialty/all method get
+app.get(ROOT_URL + "/specialty/all", new specialtyController().getall);
 
-app.get("/allroletest", (req, res)=>{
-    res.send("Public Route!")
-})
+// route for login http://localhost:3000/api/v1/smartcare/auth/register method post
+app.post(ROOT_URL + "/auth/login", new authController().login);
+
+// route for create account http://localhost:3000/api/v1/smartcare/auth/login method post
+app.post(ROOT_URL + "/auth/register", new authController().register);
+
+
 
 
 
@@ -55,11 +63,16 @@ app.get("/allroletest", (req, res)=>{
 //check role login already
 app.use(middleware.checkRole(["ADMIN", "RECEPTION", "DOCTOR", "CLIENT"]));
 
-// route for all roles in system
+// route for get all user http://localhost:3000/api/v1/smartcare/user/all method get
+app.get(ROOT_URL + "/user/all", new UserController().getall);
 
-app.get("/privaterole", (req, res)=>{
-    res.send("Private Route!")
-})
+// route for update account info infor http://localhost:3000/api/v1/smartcare/account/change method post
+app.put(ROOT_URL + "/account/change", new UserController().edit);
+
+// route for change password http://localhost:3000/api/v1/smartcare/account/changepass method post
+app.put(ROOT_URL + "/account/changepass", new UserController().edit_pass);
+
+
 
 
 
@@ -79,12 +92,17 @@ app.get("/privaterole", (req, res)=>{
 //check role admin and reception already
 app.use(middleware.checkRole(["ADMIN", "RECEPTION"]));
 
-// Route for Manager roles
+// route for get user http://localhost:3000/api/v1/smartcare/user method get
+app.get(ROOT_URL + "/user", new UserController().get);
 
-app.get("/managerrole", (req, res)=>{
-    res.send("Manager Route!")
-})
+// route for create new user http://localhost:3000/api/v1/smartcare/user method post
+app.post(ROOT_URL + "/user", new UserController().add);
 
+// route for delete user http://localhost:3000/api/v1/smartcare/user method delete
+app.delete(ROOT_URL + "/user", new UserController().delete);
+
+// route for mod user http://localhost:3000/api/v1/smartcare/user method put
+app.put(ROOT_URL + "/user", new UserController().edit);
 
 
 
@@ -92,11 +110,17 @@ app.get("/managerrole", (req, res)=>{
 //check role admin only 
 app.use(middleware.checkRole(["ADMIN"]));
 
-// Route for Admin role
+// route for get specialty http://localhost:3000/api/v1/smartcare/specialty method get
+app.get(ROOT_URL + "/specialty", new specialtyController().get);
 
-app.get("/adminrole", (req, res)=>{
-    res.send("Local Role Route!")
-})
+// route for create new specialty http://localhost:3000/api/v1/smartcare/specialty method post
+app.post(ROOT_URL + "/specialty", new specialtyController().create);
+
+// route for edit specialty http://localhost:3000/api/v1/smartcare/specialty method put
+app.put(ROOT_URL + "/specialty", new specialtyController().edit);
+
+// route for delete specialty http://localhost:3000/api/v1/smartcare/specialty method delete
+app.delete(ROOT_URL + "/specialty", new specialtyController().delete);
 
 
 
