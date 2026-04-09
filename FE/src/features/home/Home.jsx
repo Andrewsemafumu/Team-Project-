@@ -32,25 +32,78 @@ function Home(){
                                     utils.UROLE === "ADMIN" || utils.UROLE === "RECEPTION"
                                     ?
                                         <>
-                                            {/* this is wrapper for admin and reception */}
+
+                                            <Button
+                                                className="text-nowrap font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Edit Account"
+                                                click={()=>{nav("/account")}}
+                                            />
+                                            <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Change password"
+                                                click={()=>{nav("/changepass")}}
+                                            />
+                                            <Button
+                                                className="text-nowrap font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="User manager"
+                                                click={()=>{nav("/user")}}
+                                            />
+                                            <Button
+                                                className="text-nowrap font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Specialty manager"
+                                                click={()=>{nav("/specialty")}}
+                                            />
+                                            <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#ffffff] bg-[#e12727] px-6 py-2  rounded-lg shadow-2xl"
+                                                childs="Logout"
+                                                click={()=>{utils.ClearLocal(); window.location.reload()}}
+                                            />
                                         </>
                                     :
                                     utils.UROLE === "DOCTOR"
                                     ?
                                         <>
-                                            {/* this is wrapper for doctor */}
+                                            <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Edit Account"
+                                                click={()=>{nav("/account")}}
+                                            />
+                                            <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Change password"
+                                                click={()=>{nav("/changepass")}}
+                                            />
+                                            <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#ffffff] bg-[#e12727] px-6 py-2  rounded-lg shadow-2xl"
+                                                childs="Logout"
+                                                click={()=>{utils.ClearLocal(); window.location.reload()}}
+                                            />
                                         </>
                                     :
                                     utils.UROLE === "CLIENT"
                                     ?
                                         <>
-                                            {/* this is wrapper for client */}
+                                            <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Edit Account"
+                                                click={()=>{nav("/account")}}
+                                            />
+                                            <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Change password"
+                                                click={()=>{nav("/changepass")}}
+                                            />
+                                            <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#ffffff] bg-[#e12727] px-6 py-2  rounded-lg shadow-2xl"
+                                                childs="Logout"
+                                                click={()=>{utils.ClearLocal(); window.location.reload()}}
+                                            />
                                         </>
                                     :
                                     null
                                 :
                                 <>
-                                   <Button
+                                    <Button
                                         className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2  rounded-lg shadow-2xl"
                                         childs="Login"
                                         click={()=>{nav("/auth/login")}}
