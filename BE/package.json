@@ -1,0 +1,31 @@
+{
+  "name": "smartcare_be_expressjs",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "nodemon src/index.js",
+    "dev": "nodemon src/dev.js"
+  },
+  "author": "huynh le hoang",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/adapter-mariadb": "^7.4.0",
+    "@prisma/client": "^7.4.0",
+    "argon2": "^0.41.1",
+    "base-64": "^1.0.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "moment": "^2.30.1",
+    "multer": "^2.0.1",
+    "nodemailer": "^7.0.10",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "body-parser": "^2.2.0",
+    "nodemon": "^3.0.2"
+  }
+}

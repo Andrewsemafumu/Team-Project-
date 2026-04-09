@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Booking` MODIFY `status` INTEGER NOT NULL DEFAULT 1;
