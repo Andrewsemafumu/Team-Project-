@@ -54,6 +54,11 @@ function Home(){
                                                 click={()=>{nav("/specialty")}}
                                             />
                                             <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Booking"
+                                                click={()=>{nav("/manager/booking")}}
+                                            />
+                                            <Button
                                                 className="font-semibold hover:scale-105 transition ease-in-out text-[#ffffff] bg-[#e12727] px-6 py-2  rounded-lg shadow-2xl"
                                                 childs="Logout"
                                                 click={()=>{utils.ClearLocal(); window.location.reload()}}
@@ -74,6 +79,11 @@ function Home(){
                                                 click={()=>{nav("/changepass")}}
                                             />
                                             <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Booking"
+                                                click={()=>{nav("/doctor/booking")}}
+                                            />
+                                            <Button
                                                 className="font-semibold hover:scale-105 transition ease-in-out text-[#ffffff] bg-[#e12727] px-6 py-2  rounded-lg shadow-2xl"
                                                 childs="Logout"
                                                 click={()=>{utils.ClearLocal(); window.location.reload()}}
@@ -92,6 +102,11 @@ function Home(){
                                                 className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
                                                 childs="Change password"
                                                 click={()=>{nav("/changepass")}}
+                                            />
+                                            <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Booking"
+                                                click={()=>{nav("/client/booking")}}
                                             />
                                             <Button
                                                 className="font-semibold hover:scale-105 transition ease-in-out text-[#ffffff] bg-[#e12727] px-6 py-2  rounded-lg shadow-2xl"

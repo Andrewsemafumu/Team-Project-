@@ -7,7 +7,6 @@ import Booking_doctor from "./features/booking/doctor/Booking_doctor";
 import Booking_client from "./features/booking/client/Booking_client";
 import Account from "./features/account/Account";
 import ChangePass from "./features/account/Changepass";
-import Statistic_manager from "./features/statistics/Statistic_manager";
 import User_manager from "./features/user_manager/User_manager";
 import Specialty_manager from "./features/specialty_manager/Specialty_manager";
 
@@ -27,8 +26,6 @@ function App() {
           <Route path="/user" element={<User_manager/>}/>
           {/* Router specialty manager layout */}
           <Route path="/specialty" element={<Specialty_manager/>}/>
-          {/* Router statistic layout */}
-          <Route path="/statistics" element={<Statistic_manager/>}/>
           {/* Router change password layout */}
           <Route path="/changepass" element={<ChangePass/>}/>
           {/* Router manage booking page by manager */}

@@ -153,6 +153,163 @@ class utils{
         }
     }
 
+    Booking_id_to_time = (id)=>{
+        switch(id){
+            case 1:
+                return "07:30";
+
+            case 2:
+                return "08:00";
+
+            case 3:
+                return "08:30";
+
+            case 4:
+                return "09:00";
+
+            case 5:
+                return "09:30";
+
+            case 6:
+                return "10:00";
+
+            case 7:
+                return "10:30";
+
+            case 8:
+                return "11:00";
+
+            case 9:
+                return "11:30";
+            
+            case 10:
+                return "13:30";
+
+            case 11:
+                return "14:00";
+
+            case 12:
+                return "14:30";
+
+            case 13:
+                return "15:00";
+
+            case 14:
+                return "15:30";
+
+            case 15:
+                return "16:00";
+
+            case 16:
+                return "16:30";
+
+            case 17:
+                return "17:00";
+
+            default:
+                return null;
+        }
+    }
+
+    Booking_time_to_id = (time) => {
+        switch(time){
+            case "07:30":
+                return 1;
+
+            case "08:00":
+                return 2;
+
+            case "08:30":
+                return 3;
+
+            case "09:00":
+                return 4;
+
+            case "09:30":
+                return 5;
+
+            case "10:00":
+                return 6;
+
+            case "10:30":
+                return 7;
+
+            case "11:00":
+                return 8;
+
+            case "11:30":
+                return 9;
+
+            case "13:30":
+                return 10;
+
+            case "14:00":
+                return 11;
+
+            case "14:30":
+                return 12;
+
+            case "15:00":
+                return 13;
+
+            case "15:30":
+                return 14;
+
+            case "16:00":
+                return 15;
+
+            case "16:30":
+                return 16;
+
+            case "17:00":
+                return 17;
+
+            default:
+                return null;
+        }
+    };
+
+    booking_time_json_array = ()=>{
+        return [
+            { id: 1, value: "07:30" },
+            { id: 2, value: "08:00" },
+            { id: 3, value: "08:30" },
+            { id: 4, value: "09:00" },
+            { id: 5, value: "09:30" },
+            { id: 6, value: "10:00" },
+            { id: 7, value: "10:30" },
+            { id: 8, value: "11:00" },
+            { id: 9, value: "11:30" },
+            { id: 10, value: "13:30" },
+            { id: 11, value: "14:00" },
+            { id: 12, value: "14:30" },
+            { id: 13, value: "15:00" },
+            { id: 14, value: "15:30" },
+            { id: 15, value: "16:00" },
+            { id: 16, value: "16:30" },
+            { id: 17, value: "17:00" }
+        ];
+    }
+
+    Booking_status_mapping = (type)=>{
+        switch (type) {
+            case 1:
+                return "Booked";
+
+            case 2:
+                return "Checked-in (Waiting)";
+
+            case 3:
+                return "Completed";
+
+            // case 4:
+            //     return "Rejected";
+        
+            default:
+                return "Undefined";
+        }
+    }
+
 
     // base
     URL_BE_BASE_IMG    = import.meta.env.VITE_BASE_URL_IMG;
