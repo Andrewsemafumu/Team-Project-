@@ -73,6 +73,9 @@ app.put(ROOT_URL + "/account/change", new UserController().edit);
 // route for change password http://localhost:3000/api/v1/smartcare/account/changepass method post
 app.put(ROOT_URL + "/account/changepass", new UserController().edit_pass);
 
+// route for get all doctor freetime base startdate, enddate and doctorID http://localhost:3000/api/v1/smartcare/booking/freetime method get
+app.get(ROOT_URL + "/doctor/freetime", new bookingController().getdoctor_freetime);
+
 // route for get a booking http://localhost:3000/api/v1/smartcare/booking method get
 app.get(ROOT_URL + "/booking", new bookingController().get);
 
@@ -87,7 +90,6 @@ app.post(ROOT_URL + "/booking", new bookingController().create);
 
 
 
-
 //check role login already
 app.use(middleware.checkRole(["ADMIN", "RECEPTION", "DOCTOR"]));
 
@@ -96,7 +98,6 @@ app.use(middleware.checkRole(["ADMIN", "RECEPTION", "DOCTOR"]));
 app.get("/privaterole", (req, res)=>{
     res.send("Local Role Route!")
 })
-
 
 
 

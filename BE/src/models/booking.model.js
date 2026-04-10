@@ -1,6 +1,9 @@
 const { ModDTO } = require("../DTO/booking/ModDTO");
 const { NewDTO } = require("../DTO/booking/NewDTO");
+const { roleMappingRaw } = require("../mapping/mapping");
 const {prisma} = require("./../config/connectSql");
+
+const user_cancel_status = [4,5,6];
 
 class bookingModel{
     async get(req, res){
@@ -197,6 +200,45 @@ class bookingModel{
         }catch(err){
             console.error(err);
             res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
+    async getdoctor_freetime(req, res){
+        try{
+            const start = new Date(req.query.start);
+            const end = new Date(req.query.end);
+            const docID = req.query.docID ? !isNaN(req.query.docID) ? req.query.docID * 1 : null : null;
+
+            if(!docID){
+                return res.status(400).send({
+                    "message": "Bad request!"
+                })
+            }
+
+            const res_all = await prisma.booking.findMany({
+                where:{
+                    doctorID: docID,
+                    bookingDate: {
+                        gte: start,
+                        lt: end
+                    }
+                },
+                select:{
+                    bookingDate: true                    
+                }
+            });
+
+            console.log(res_all);
+            
+            return res.status(200).send({
+                "message": "Success!",
+                "data": res_all
+            })
+        }catch(err){
+            console.error(err);
+            return res.status(500).send({
                 "message": "Server error!"
             })
         }

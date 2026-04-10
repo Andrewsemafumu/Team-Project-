@@ -46,6 +46,17 @@ class bookingController{
         }
     }
 
+    async getdoctor_freetime(req, res){
+        try{
+            await new bookingModel().getdoctor_freetime(req, res);
+        }catch(err){
+            console.error(err);
+            return res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
     async create(req, res){
         try{
             await new bookingModel().create(req, res);
