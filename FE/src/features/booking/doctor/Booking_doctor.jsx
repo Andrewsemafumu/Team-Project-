@@ -3,18 +3,40 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../../components/Button";
 import { Helmet } from "react-helmet";
 import utils from "../../../utils/utils";
-import { MdOutlineDone } from "react-icons/md";
+import { MdDelete, MdOutlineDone } from "react-icons/md";
 import { FiLoader } from "react-icons/fi";
 import { TbProgressCheck } from "react-icons/tb";
+import { LuNotebookPen } from "react-icons/lu";
 import $ from "jquery";
+import InputTextArea from "../../../components/InputTextArea";
+import InputText from "../../../components/InputText";
 
 export default function Booking_client(){
+
+    const diagnoseRef = useRef(null)
 
     useEffect(()=>{
         isLogin();
     }, [])
 
     const nav = useNavigate();
+
+    const [allDiagnose, setAllDiagnose] = useState([]);
+    const [patientID, setPatientID] = useState(null);
+
+    const [diagnose, setDiagnose] = useState({
+        id: null,
+        title: null,
+        descript: null,
+        bookingID: null
+    })
+
+    const changeDiagnose = function(e){
+        setDiagnose({
+            ...diagnose,
+            [e.target.name] : e.target.value
+        });
+    }
     
     // check login funciton
     const isLogin = function(){
@@ -56,6 +78,199 @@ export default function Booking_client(){
         })
     }
 
+    async function delete_booking(id){
+        if(confirm("Are you sure you want to delete this booking?")){
+            $.ajax({
+                url    : utils.URL_BE_BASE + "booking" ,
+                headers: {
+                    tokenizer: localStorage.getItem("%UT%")
+                },
+                crossDomain: true,
+                type   : "DELETE",
+                data:{
+                    id: utils.UID,
+                    bookingID: id
+                },
+                timeout: 10000,
+                success: (d)=>{
+                    alert(d.message)
+                    getall_booking()
+                },
+                error  : (e)=>{
+                    console.log(e);
+                    alert(e.responseJSON?.message)
+                },
+            })
+        }
+    }
+
+    function getDiagnose(bookID, patID){
+        $.ajax({
+            url    : utils.URL_BE_BASE + "diagnose",
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "GET",
+            data   : {
+                id : utils.UID,
+                bookingID: bookID  
+            },
+            timeout: 10000,
+            success: async (d)=>{
+                setPatientID(patID)
+                getDiagnose_history(patID);
+                if(d.data.recordID){
+                    alert("Booking already have record diagnose");
+                    setDiagnose({
+                        id: d.data.recordID,
+                        title: d.data.record.title,
+                        descript: d.data.record.descript,
+                        bookingID:  d.data.record.bookingID
+                    })
+                }else{
+                    alert("Booking doesn't have record diagnose");
+                    setDiagnose({
+                        id: null,
+                        title: null,
+                        descript: null,
+                        bookingID: d.data.id
+                    })
+                }
+
+                if(diagnoseRef.current){
+                    diagnoseRef.current.scrollIntoView()
+                }
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
+        })
+    }
+
+    function getDiagnose_history(patID){
+        $.ajax({
+            url    : utils.URL_BE_BASE + "diagnose/history",
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "GET",
+            data   : {
+                id : patID,
+            },
+            timeout: 10000,
+            success: async (d)=>{
+                setAllDiagnose(d.data);
+                if(diagnoseRef.current){
+                    diagnoseRef.current.scrollIntoView()
+                }
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
+        })
+    }
+
+    function createDiagnose(){
+        if(!diagnose.bookingID){
+            alert("Please choose one booking to add diagnose!");
+            return;
+        }
+
+        if(!diagnose.title){
+            alert("Please fill title diagnose!");
+            return;
+        }
+
+        if(!diagnose.descript){
+            alert("Please fill descript diagnose!");
+            return;
+        }
+
+        $.ajax({
+            url    : utils.URL_BE_BASE + "diagnose",
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "POST",
+            data   : {
+                userID : utils.UID,
+                bookingID: diagnose.bookingID,
+                title: diagnose.title,
+                descript: diagnose.descript,
+            },
+            timeout: 10000,
+            success: async (d)=>{
+                alert(d.message);
+                getDiagnose_history(patientID);
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
+        })
+    }
+
+    function updateDiagnose(){
+        if(!diagnose.id){
+            alert("This booking doesn't have diagnose to update!");
+            return;
+        }
+
+        if(!diagnose.bookingID){
+            alert("Please choose one booking to add diagnose!");
+            return;
+        }
+
+        if(!diagnose.title){
+            alert("Please fill title diagnose!");
+            return;
+        }
+
+        if(!diagnose.descript){
+            alert("Please fill descript diagnose!");
+            return;
+        }
+
+        $.ajax({
+            url    : utils.URL_BE_BASE + "diagnose",
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "PUT",
+            data   : {
+                userID : utils.UID,
+                id: diagnose.id,
+                bookingID: diagnose.bookingID,
+                title: diagnose.title,
+                descript: diagnose.descript,
+            },
+            timeout: 10000,
+            success: async (d)=>{
+                alert(d.message);
+                getDiagnose_history(patientID);
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
+        })
+    }
+
+    function cancelDiagnose(){
+        setDiagnose({
+            id: null,
+            title: null,
+            descript: null,
+            bookingID: null
+        })
+    }
+
     return(
         <>
             <Helmet><title>SMARTCARE | Booking Management</title></Helmet>
@@ -67,6 +282,7 @@ export default function Booking_client(){
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Title</th>
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Descript</th>
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Patient Info</th>
+                            <th className="p-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Diagnostic</th>
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Date</th>
                             <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Status</th>
                             <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Action</th>
@@ -79,6 +295,7 @@ export default function Booking_client(){
                                         <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.title}</td>
                                         <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.descript}</td>
                                         <td className="font-semibold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{`${d.client.name} - ${d.client.sex ? d.client.sex === 1 ? "Male" : "Female" : "Undefined sex"} - ${d.client.phone} - ${d.client.mail} - ${d.client.address ? d.client.address : "No Address"} - ${d.client.birthdate ? new Date(d.doctor.birthdate).toLocaleDateString() : "No Birthdate"}` }</td>
+                                        <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.record ? `${d.record.title} - ${d.record.descript}` : "..." }</td>
                                         <td className="font-bold text-center p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{new Date(d.bookingDate).toLocaleString()}</td>
                                         <td className="font-semibold text-center p-2 text-[#000000] text-[11px] overflow-scroll text-wrap">
                                             <Button
@@ -99,6 +316,14 @@ export default function Booking_client(){
                                         <td className="font-bold text-[#000000] text-[11px] overflow-scroll">
                                             <div className="flex justify-center items-center w-full gap-1 p-3">
                                                 <Button
+                                                    className="bg-[#000000] p-2 rounded-full text-[#ffffff] text-[11px] font-semibold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
+                                                    childs={
+                                                        <LuNotebookPen className="text-lg"/>
+                                                    }
+                                                    title="Diagnose"
+                                                    click={()=>{getDiagnose(d.id, d.client.id)}}
+                                                />
+                                                <Button
                                                     disabled={d.status === 3 ? true : false}
                                                     className="bg-[red] p-2 rounded-full text-[#ffffff] text-[11px] font-semibold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
                                                     childs={
@@ -116,7 +341,86 @@ export default function Booking_client(){
                     </table>
                 </div>
 
+                {/* layout of diagnose form */}
+                <div ref={diagnoseRef} className="w-full">
+                    {
+                        diagnose.bookingID
+                        ?
+                            <div className="flex flex-col items-center justify-center gap-5 w-full p-5">
+                                <div className="bg-[#ffffff] shadow-2xl p-5 rounded-lg w-full">
+                                    <h1 className="text-[black] text-lg pb-3"><i>Diagnose history</i></h1>
+                                    <table className="border-collapse overflow-scroll w-full">
+                                        <thead className="text-[12px] text-[#000000]">
+                                            <th className="p-2 border-2 border-[#000000] overflow-scroll bg-[black] text-[#ffffff]">Title</th>
+                                            <th className="p-2 border-2 border-[#000000] overflow-scroll bg-[black] text-[#ffffff]">Descript</th>
+                                            <th className="p-2 border-2 border-[#000000] overflow-scroll bg-[black] text-[#ffffff]">Doctor</th>
+                                            <th className="p-2 border-2 border-[#000000] overflow-scroll bg-[black] text-[#ffffff]">Date</th>
+                                        </thead>
+                                        <tbody >
+                                            {
+                                                allDiagnose.map(d => {
+                                                    return <tr className="border-2 text-nowrap" key={null}>
+                                                        <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.record ? d.record.title : "..." }</td>
+                                                        <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.record ? d.record.descript : "..."}</td>
+                                                        <td className="font-semibold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{`${d.doctor.name} ${d.doctor.specialty ? `(${d.doctor.specialty.name})` : ""} - ${d.doctor.phone} - ${d.doctor.mail} - ${d.doctor.address ? d.doctor.address : "No Address"} - ${d.doctor.birthdate ? new Date(d.doctor.birthdate).toLocaleDateString() : "No Birthdate"}`}</td>
+                                                        <td className="font-bold text-center p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{new Date(d.bookingDate).toLocaleString()}</td>
+                                                    </tr>
+                                                })
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="bg-[#ffffff] shadow-2xl p-5 rounded-lg w-full">
+                                    <h1 className="text-[black] text-lg pb-3"><i>Diagnose current booking</i></h1>
+                                    <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row justify-center items-start gap-5 pb-5">
+                                        <InputText value={diagnose.title} onChange={(e)=>changeDiagnose(e)} inputName="title" InputclassName="bg-[#e0e0e0] text-[black] border-none focus:border-[#00000082] " LabelclassName="text-[black] peer-placeholder-shown:text-[black]" label="Diagnose title" />
+                                    </div>
+                                    <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row justify-center items-start gap-5">
+                                        <InputTextArea value={diagnose.descript} onChange={(e)=>changeDiagnose(e)} inputName="descript" InputclassName="bg-[#e9e9e9]  px-3 py-5 text-[#2C1E14] border-none focus:border-[#00000082] h-80" LabelclassName="text-[#00000098] text-[12px] peer-placeholder-shown:text-[#00000072]" label={`Diagnose description`}/> 
+                                    </div>
+                                </div>
+                            </div>
+                        :
+                        null
+                    }
+                </div>
+
                 <div className="flex items-center justify-end gap-3 w-full" >
+                    {
+                        diagnose.bookingID 
+                        ?
+                            diagnose.id !== null
+                            ?
+                            <>
+                                <Button
+                                    className="w-full h-12 bg-[black] text-[#ffffff] rounded-lg text-lg font-bold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
+                                    childs="Update"
+                                    click={()=>{updateDiagnose()}}
+                                />
+                                <Button
+                                    className="w-full h-12 bg-[black] text-[#ffffff] rounded-lg text-lg font-bold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
+                                    childs="Cancel"
+                                    click={()=>{cancelDiagnose()}}
+                                />
+                            </>
+                            
+                            :
+                            <>
+                                <Button
+                                    className="w-full h-12 bg-[black] text-[#ffffff] rounded-lg text-lg font-bold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
+                                    childs="Save"
+                                    click={()=>{createDiagnose()}}
+                                />
+                                <Button
+                                    className="w-full h-12 bg-[black] text-[#ffffff] rounded-lg text-lg font-bold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
+                                    childs="Cancel"
+                                    click={()=>{cancelDiagnose()}}
+                                />
+                            </>
+                        :
+                        null
+                    }
                     <Button
                         className="w-full h-12 bg-[black] text-[#ffffff] rounded-lg text-lg font-bold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
                         childs="Back"

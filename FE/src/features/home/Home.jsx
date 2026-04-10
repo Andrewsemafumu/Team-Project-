@@ -2,10 +2,46 @@ import { useNavigate } from "react-router";
 import utils from "../../utils/utils";
 import Button from "../../components/Button";
 import { Helmet } from "react-helmet";
+import { useEffect, useState } from "react";
+import $ from "jquery";
 
 function Home(){
         
         const nav = useNavigate();
+
+        const [todayReport, setTodayReport] = useState({
+            "booked": 0,
+            "checkin": 0,
+            "complete": 0,
+            "doctor_create_today": 0,
+            "patient_create_today": 0,
+            "reception_create_today": 0,
+            "doctor_have_specialty": 0,
+            "doctor_dont_have_specialty": 0,
+            "specialty": 0,
+            "specialty_create_today": 0
+        })
+
+        useEffect(()=>{
+            if(utils.UROLE === "ADMIN" || utils.UROLE === "RECEPTION"){
+                $.ajax({
+                    url    : utils.URL_BE_BASE + "todayreport",
+                    headers: {
+                        tokenizer: localStorage.getItem("%UT%")
+                    },
+                    crossDomain: true,
+                    type   : "GET",
+                    timeout: 10000,
+                    success: (d)=>{
+                        setTodayReport(d)
+                    },
+                    error  : (e)=>{
+                        console.log(e);
+                        alert(e.responseJSON?.message)
+                    },
+                })
+            }
+        },[])
 
         return(
             <>
@@ -24,6 +60,27 @@ function Home(){
                             ""
                         }
                         </p>
+                        {
+                            utils.UROLE === "ADMIN" || utils.UROLE === "RECEPTION"
+                            ?
+                                <div className="w-full flex gap-2 flex-wrap p-2 rounded-2xl">
+                                    <h1 className="text-[#000000] font-bold text-xl pb-1 italic">Daily report</h1>
+                                    <div className="w-full">
+                                        <h1 className="text-[#000000] text-sm pb-2 font-semibold">Specialty: {todayReport.specialty}</h1>
+                                        <h1 className="text-[#000000] text-sm pb-2 font-semibold">Specialty (created today): {todayReport.specialty_create_today}</h1>
+                                        <h1 className="text-[#000000] text-sm pb-2 font-semibold">Patient (created today): {todayReport.patient_create_today}</h1>
+                                        <h1 className="text-[#000000] text-sm pb-2 font-semibold">Doctor (created today): {todayReport.doctor_create_today}</h1>
+                                        <h1 className="text-[#000000] text-sm pb-2 font-semibold">Receptionist (created today): {todayReport.reception_create_today}</h1>
+                                        <h1 className="text-[#000000] text-sm pb-2 font-semibold">Booking (booked): {todayReport.booked}</h1>
+                                        <h1 className="text-[#000000] text-sm pb-2 font-semibold">Booking (check-in): {todayReport.checkin}</h1>
+                                        <h1 className="text-[#000000] text-sm pb-2 font-semibold">Booking (done): {todayReport.complete}</h1>
+                                        <h1 className="text-[#000000] text-sm pb-2 font-semibold">Doctor (have specialty): {todayReport.doctor_have_specialty}</h1>
+                                        <h1 className="text-[#000000] text-sm font-semibold">Booking (don&apos;t have specialty): {todayReport.doctor_dont_have_specialty}</h1>
+                                    </div>
+                                </div>
+                            :
+                            null
+                        }
                         <div className="flex items-center justify-start gap-3 pt-5 flex-wrap">
                             
                             {

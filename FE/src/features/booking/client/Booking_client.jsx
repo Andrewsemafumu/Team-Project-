@@ -410,6 +410,7 @@ export default function Booking_client(){
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Title</th>
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Descript</th>
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Doctor Info</th>
+                            <th className="p-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Diagnostic</th>
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Date</th>
                             <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Status</th>
                             <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Action</th>
@@ -422,6 +423,7 @@ export default function Booking_client(){
                                         <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.title}</td>
                                         <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.descript}</td>
                                         <td className="font-semibold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{`${d.doctor.name} ${d.doctor.specialty ? `(${d.doctor.specialty.name})` : ""} - ${d.doctor.phone} - ${d.doctor.mail} - ${d.doctor.address ? d.doctor.address : "No Address"} - ${d.doctor.birthdate ? new Date(d.doctor.birthdate).toLocaleDateString() : "No Birthdate"}`}</td>
+                                        <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.record ? `${d.record.title} - ${d.record.descript}` : "..." }</td>
                                         <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{new Date(d.bookingDate).toLocaleString()}</td>
                                         <td className="pt-2 font-semibold text-center p-2 flex justify-center items-center text-[#000000]  text-[11px] overflow-scroll text-wrap">
                                             {

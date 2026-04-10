@@ -447,6 +447,13 @@ export default function Booking_manager(){
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Descript</th>
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Patient Info</th>
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Doctor Info</th>
+                            {
+                                utils.UROLE === "ADMIN"
+                                ?
+                                <th className="p-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Diagnostic</th>
+                                :
+                                null
+                            } 
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Date</th>
                             <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Status</th>
                             <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Action</th>
@@ -460,6 +467,13 @@ export default function Booking_manager(){
                                         <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.descript}</td>
                                         <td className="font-semibold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{`${d.client.name} - ${d.client.sex ? d.client.sex === 1 ? "Male" : "Female" : "Undefined sex"} - ${d.client.phone} - ${d.client.mail} - ${d.client.address ? d.client.address : "No Address"} - ${d.client.birthdate ? new Date(d.doctor.birthdate).toLocaleDateString() : "No Birthdate"}` }</td>
                                         <td className="font-semibold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{`${d.doctor.name} ${d.doctor.specialty ? `(${d.doctor.specialty.name})` : ""} - ${d.client.sex ? d.client.sex === 1 ? "Male" : "Female" : "Undefined sex"} - ${d.doctor.phone} - ${d.doctor.mail} - ${d.doctor.address ? d.doctor.address : "No Address"} - ${d.doctor.birthdate ? new Date(d.doctor.birthdate).toLocaleDateString() : "No Birthdate"}`}</td>
+                                        {
+                                            utils.UROLE === "ADMIN"
+                                            ?
+                                            <td className="font-bold text-left p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.record ? `${d.record.title} - ${d.record.descript}` : "..." }</td>
+                                            :
+                                            null
+                                        } 
                                         <td className="font-bold text-center p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{new Date(d.bookingDate).toLocaleString()}</td>
                                         <td className="font-semibold text-center p-2 text-[#000000] text-[11px] overflow-scroll text-wrap">
                                             <Button
