@@ -382,6 +382,90 @@ class bookingModel{
         }
     }
 
+    async update_status(req, res){
+        try{
+            const bookingID = req.body.bookingID ? !isNaN(req.body.bookingID) ? req.body.bookingID * 1 : null: null; 
+            const id = req.body.id ? !isNaN(req.body.id) ? req.body.id * 1 : null: null; 
+            if(!bookingID){
+                return res.status(400).send({
+                    "message": "Bad request!"
+                })
+            }
+
+            var booking = null;
+
+            if(req.u.BASEROLE === "DOCTOR"){
+                if(!id){
+                    return res.status(400).send({
+                        "message": "Bad request!"
+                    })
+                }
+                if(req.u.BASEID === id){
+                    booking = await prisma.booking.findUnique({
+                        where: {
+                            id: bookingID,
+                            doctorID: id
+                        },
+                        select: {
+                            status: true
+                        }
+                    })
+                }
+            }else{
+                booking = await prisma.booking.findUnique({
+                    where: {
+                        id: bookingID,
+                    },
+                    select: {
+                        status: true
+                    }
+                })
+            }
+
+            var status = null
+            if(booking){
+                if(booking.status === 1){
+                    status = 2
+                }else if(booking.status === 2){
+                    status = 3
+                }else{
+                    return res.status(409).send({
+                        "message": "Cannot update booking status!"
+                    })
+                }
+
+                const update_booking = await prisma.booking.update({
+                    where: {
+                        id: bookingID
+                    },
+                    data: {
+                        status : status
+                    }
+                })
+
+                if(!update_booking){
+                    return res.status(409).send({
+                        "message": "Cannot update booking status!"
+                    })
+                }else{
+                    return res.status(200).send({
+                        "message": "Success!"
+                    })
+                }
+
+            }else{
+                return res.status(404).send({
+                    "message": "Booking not !"
+                })
+            }
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            });
+        }
+    }
+
     async mod(req, res){
         try{
             const data = ModDTO(req);

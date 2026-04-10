@@ -79,6 +79,17 @@ class bookingController{
         }
     }
 
+    async update_status(req, res){
+        try{
+            await new bookingModel().update_status(req, res);
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
     async delete(req, res){
         try{
             await new bookingModel().delete(req, res);

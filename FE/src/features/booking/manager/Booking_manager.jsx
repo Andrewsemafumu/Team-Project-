@@ -355,6 +355,29 @@ export default function Booking_manager(){
         })
     }
 
+    function update_appointment_status(id){
+        $.ajax({
+            url    : utils.URL_BE_BASE + "booking/status",
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "PUT",
+            data   : {
+                bookingID: id  
+            },
+            timeout: 10000,
+            success: async (d)=>{
+                await getall_booking();
+                alert(d.message);
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
+        })
+    }
+
     function get_booking(id){
         $.ajax({
             url    : utils.URL_BE_BASE + "booking" ,
@@ -488,7 +511,7 @@ export default function Booking_manager(){
                                                     d.status === 3 ? <MdOutlineDone className="text-lg" title={utils.Booking_status_mapping(d.status)} /> 
                                                     : null : null
                                                 }
-                                                click={()=>{}}
+                                                click={()=>update_appointment_status(d.id)}
                                             />
                                         </td>
                                         <td className="font-bold text-[#000000] text-[11px] overflow-scroll">

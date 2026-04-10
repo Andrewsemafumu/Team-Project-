@@ -112,6 +112,9 @@ app.put(ROOT_URL + "/diagnose", new recordController().update);
 //check role login already
 app.use(middleware.checkRole(["ADMIN", "RECEPTION", "DOCTOR"]));
 
+// route for edit booking http://localhost:3000/api/v1/smartcare/booking/status method put
+app.put(ROOT_URL + "/booking/status", new bookingController().update_status);
+
 
 
 
