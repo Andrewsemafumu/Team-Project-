@@ -137,6 +137,9 @@ app.delete(ROOT_URL + "/user", new UserController().delete);
 // route for mod user http://localhost:3000/api/v1/smartcare/user method put
 app.put(ROOT_URL + "/user", new UserController().edit);
 
+// route for get statistic booking http://localhost:3000/api/v1/smartcare/booking/statistics method get
+app.get(ROOT_URL + "/booking/statistics", new bookingController().statistics);
+
 // route for get today report booking http://localhost:3000/api/v1/smartcare/todayreport method get
 app.get(ROOT_URL + "/todayreport", new bookingController().today_report);
 

@@ -618,6 +618,154 @@ class bookingModel{
         }
     }
 
+    async statistics(req, res){
+        
+        const statictis_doctor_booking = await prisma.booking.groupBy({
+            by: ['doctorID'],
+            _count: {
+                id: true
+            }
+        })
+
+        const all_doctor_mapping = await prisma.user.findMany({
+            where: {
+                role: 2
+            },
+            include: {
+                specialty: true
+            }
+        })
+
+        for(var doc_book of statictis_doctor_booking){
+            for(var doc of all_doctor_mapping){
+                if(doc_book.doctorID === doc.id){
+                    doc_book.name = doc.name;
+                    doc_book.specialty = doc.specialty.name
+                    break
+                }
+            }
+        }
+
+        const statictis_patient_booking = await prisma.booking.groupBy({
+            by: ['clientID'],
+            _count: {
+                id: true
+            }
+        })
+
+        const all_patient_mapping = await prisma.user.findMany({
+            where: {
+                role: 3
+            },
+            include: {
+                specialty: true
+            }
+        })
+
+        for(var patient_book of statictis_patient_booking){
+            for(var patient of all_patient_mapping){
+                if(patient_book.clientID === patient.id){
+                    patient_book.name = patient.name;
+                    break
+                }
+            }
+        }
+
+        var today = new Date();
+        var start_today = `${today.getFullYear()}-${today.getMonth()+1 > 10 ? today.getMonth()+1 : `0${today.getMonth()+1}`}-${today.getDate()}T00:00:00.000Z`
+        var end_today = `${today.getFullYear()}-${today.getMonth()+1 > 10 ? today.getMonth()+1 : `0${today.getMonth()+1}`}-${today.getDate()}T23:59:59.000Z`
+
+        const statictis_doctor_today_sumary = await prisma.booking.groupBy({
+            by:['doctorID'],
+            where:{
+                bookingDate: {
+                    gte: start_today,
+                    lte: end_today
+                }
+            },
+            _count:{
+                id:true
+            }
+        })
+
+        for(var today_doc_book of statictis_doctor_today_sumary){
+            for(var doc of all_doctor_mapping){
+                if(today_doc_book.doctorID === doc.id){
+                    today_doc_book.name = doc.name;
+                    today_doc_book.specialty = doc.specialty.name
+                    break
+                }
+            }
+        }
+
+        const statictis_patient_today_sumary = await prisma.booking.groupBy({
+            by:['clientID'],
+            where:{
+                bookingDate: {
+                    gte: start_today,
+                    lte: end_today
+                }
+            },
+            _count:{
+                id:true
+            }
+        })
+
+        for(var today_patient_book of statictis_patient_today_sumary){
+            for(var patient of all_patient_mapping){
+                if(today_patient_book.clientID === patient.id){
+                    today_patient_book.name = patient.name;
+                    break
+                }
+            }
+        }
+
+        const raw = await prisma.$queryRaw`
+        SELECT DATE(bookingDate) AS booking_date, COUNT(*) AS total
+        FROM Booking
+        GROUP BY DATE(bookingDate)
+        ORDER BY booking_date ASC
+        `;
+
+        const statictis_date_booking = raw.map(item => ({
+        ...item,
+        total: Number(item.total),
+        }));
+
+        const count_doctor = await prisma.user.count({
+            where:{
+                role: 2
+            }
+        })
+
+        const count_patient = await prisma.user.count({
+            where:{
+                role: 3
+            }
+        })
+
+        const count_reception = await prisma.user.count({
+            where:{
+                role: 1
+            }
+        })
+
+        res.status(200).send({
+            "message": "Success!",
+            "statistic_doctor": statictis_doctor_booking,
+            "statistic_patient": statictis_patient_booking,
+            "statistic_date": statictis_date_booking,
+            "statistic_doctor_today": statictis_doctor_today_sumary,
+            "statistic_patient_today": statictis_patient_today_sumary,
+            "user": {
+                "doctor": count_doctor,
+                "patient": count_patient,
+                "reception": count_reception
+            }
+        })
+        
+    }
+
     async today_report(req,res){
         try{
             var today = new Date();
