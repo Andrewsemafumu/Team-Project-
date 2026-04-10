@@ -33,7 +33,6 @@ export default function Booking_client(){
             }
             getall_doctor();
             getall_booking();
-            setTimeList(utils.booking_time_json_array())
         }
     }
 
@@ -76,6 +75,7 @@ export default function Booking_client(){
                 ["time"] : null,
                 [e.target.name] : e.target.value ? e.target.value : null
             });
+            init_timelist(e.target.value);
         }else{
             setBooking({
                 ...booking,
@@ -83,6 +83,41 @@ export default function Booking_client(){
             });
         }
        
+    }
+
+    function init_timelist(date){
+        const start = new Date(`${date}T07:00:00`).toISOString()
+        const end = new Date(`${date}T17:30:00`).toISOString()
+        $.ajax({
+            url    : utils.URL_BE_BASE + "doctor/freetime",
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "GET",
+            data   : {
+                docID:booking.doctorID*1,
+                start: start,
+                end: end
+            },
+            timeout: 10000,
+            success: (d)=>{
+                console.table(d.data);
+                if(d.data){
+                    var timelist = utils.booking_time_json_array()
+                    for(var b of d.data){
+                        const date = new Date(b.bookingDate);
+                        const time = date.getHours().toString().padStart(2,'0') + ":" + date.getMinutes().toString().padStart(2,'0');
+                        timelist = timelist.filter(t => t.value !== time);
+                    }
+                }
+                setTimeList(timelist)
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
+        })
     }
 
     function getall_doctor(){
@@ -186,6 +221,44 @@ export default function Booking_client(){
         })
     }
 
+    function init_timelist_for_update_booking(date, docID, booked_time){
+        const start = new Date(`${date}T07:00:00`).toISOString()
+        const end = new Date(`${date}T17:30:00`).toISOString()
+        $.ajax({
+            url    : utils.URL_BE_BASE + "doctor/freetime",
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "GET",
+            data   : {
+                docID:docID*1,
+                start: start,
+                end: end
+            },
+            timeout: 10000,
+            success: (d)=>{
+                console.table(d.data);
+                if(d.data){
+                    var timelist = utils.booking_time_json_array()
+                    for(var b of d.data){
+                        const date = new Date(b.bookingDate);
+                        const time = date.getHours().toString().padStart(2,'0') + ":" + date.getMinutes().toString().padStart(2,'0');
+                        timelist = timelist.filter(t => (t.value !== time));
+                        if(utils.Booking_time_to_id(booked_time)){
+                            timelist.push({id: utils.Booking_time_to_id(booked_time), value: booked_time})
+                        }
+                    }
+                    setTimeList(timelist)
+                }
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
+        })
+    }
+
     function cancel_update(){
         setBookingID(null);
         setBooking({
@@ -238,6 +311,7 @@ export default function Booking_client(){
         <>
             <Helmet><title>SMARTCARE | Booking Management</title></Helmet>
             <div className="p-5 flex flex-col items-center justify-center gap-5 w-full">
+
                 <div className="bg-[#ffffff] shadow-2xl p-5 rounded-lg w-full">
                     <table className="border-collapse w-full">
                         <thead className="text-[12px] text-[#000000]">
@@ -311,8 +385,8 @@ export default function Booking_client(){
                                 ]
                             }
                         />
-                        <InputDateTime onChange={(e)=>change(e)} value={booking.date} inputName="date" InputclassName="bg-[#e0e0e0] text-[black] border-none focus:border-[#00000082] h-full text-sm" LabelclassName="text-[black] peer-placeholder-shown:text-[black]" label="From" />
-                        <InputSelect value={ booking.time ? utils.Booking_time_to_id(booking.time) : null} onChange={(e)=>{change(e)}} inputName="time" InputclassName="h-full text-sm text-lg bg-[#e9e9e9] px-3 py-5 text-[black] border-none focus:border-[#00000082]" 
+                        <InputDateTime disabled={booking.doctorID ? false : true} onChange={(e)=>change(e)} value={booking.date} inputName="date" InputclassName="bg-[#e0e0e0] text-[black] border-none focus:border-[#00000082] h-full text-sm" LabelclassName="text-[black] peer-placeholder-shown:text-[black]" label="From" />
+                        <InputSelect disabled={booking.doctorID && booking.date ? false : true} value={ booking.time ? utils.Booking_time_to_id(booking.time) : null} onChange={(e)=>{change(e)}} inputName="time" InputclassName="h-full text-sm text-lg bg-[#e9e9e9] px-3 py-5 text-[black] border-none focus:border-[#00000082]" 
                             options = {
                                 time.length > 0
                                     ? [
