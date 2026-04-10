@@ -9,6 +9,7 @@ import InputDateTime from "../../../components/InputDate";
 import $ from "jquery";
 import { TbProgressCheck } from "react-icons/tb";
 import { FiLoader } from "react-icons/fi";
+import { FaRegStickyNote } from "react-icons/fa";
 import { MdDelete, MdEdit, MdOutlineDone } from "react-icons/md";
 
 export default function Booking_client(){
@@ -18,6 +19,44 @@ export default function Booking_client(){
     }, [])
 
     const [bookingID, setBookingID] = useState(null);
+
+    const [bookingIDForNote, setBookingIDForNote] = useState(null);
+
+    const noteRef = useRef(null)
+    const [notes, setNotes] = useState([])
+
+    function get_all_note(bookID){
+        setBookingIDForNote(bookID);
+
+        $.ajax({
+            url    : utils.URL_BE_BASE + "note/all",
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "GET",
+            data   : {
+                id : utils.UID,
+                bookingID: bookID  
+            },
+            timeout: 10000,
+            success: async (d)=>{
+                setNotes(d.data.note)
+                if(noteRef.current){
+                    noteRef.current.scrollIntoView()
+                }
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
+        })
+        
+    }
+
+    function cancelCurrentBookingNote(){
+        setBookingIDForNote(null)
+    }
 
     const nav = useNavigate();
     
@@ -402,6 +441,52 @@ export default function Booking_client(){
         <>
             <Helmet><title>SMARTCARE | Booking Management</title></Helmet>
             <div className="p-5 flex flex-col items-center justify-center gap-5 w-full">
+                <div ref={noteRef} className="w-full">
+                    {
+                        bookingIDForNote 
+                        ?
+                            <div className="p-5 flex flex-col items-center justify-center gap-5 w-full">
+                                <div className="bg-[#ffffff] shadow-2xl p-5 rounded-lg w-full">
+                                    <h1 className="text-[black] text-lg pb-3"><i>Notes</i></h1>
+                                    <table className="border-collapse overflow-scroll w-full">
+                                        <thead className="text-[12px] text-[#000000]">
+                                            <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Title</th>
+                                            <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Descript</th>
+                                            <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Date</th>
+                                            <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Update Date</th>
+                                        </thead>
+                                        <tbody >
+                                            {
+                                                notes.map(d => {
+                                                    return <tr className="border-2 text-nowrap" key={null}>
+                                                        <td className="font-bold text-center p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.title}</td>
+                                                        <td className="font-bold text-center p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.descript}</td>
+                                                        <td className="font-bold text-center p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{new Date(d.date01).toLocaleString()}</td>
+                                                        <td className="font-bold text-center p-1 text-[#000000] text-[11px] overflow-scroll text-wrap">{d.date02 ? new Date(d.date02).toLocaleString() : "Haven't updated yet!"}</td>
+                                                    </tr>
+                                                })
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {
+                                    bookingIDForNote 
+                                    ?
+                                        <>
+                                            <Button
+                                                className="w-full h-12 bg-[black] text-[#ffffff] rounded-lg text-lg font-bold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
+                                                childs="Close"
+                                                click={()=>{cancelCurrentBookingNote()}}
+                                            />
+                                        </>   
+                                    :
+                                    null
+                                }
+                            </div>
+                        :
+                        null
+                    }
+                </div>
 
                 <div className="bg-[#ffffff] shadow-2xl p-5 rounded-lg w-full">
                     <table className="border-collapse w-full">
@@ -413,6 +498,7 @@ export default function Booking_client(){
                             <th className="p-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Diagnostic</th>
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Date</th>
                             <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Status</th>
+                            <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Notes</th>
                             <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Action</th>
                         </thead>
                         <tbody >
@@ -435,6 +521,19 @@ export default function Booking_client(){
                                                 d.status === 3 ? <MdOutlineDone className="text-xl" title={utils.Booking_status_mapping(d.status)} /> 
                                                 : null : null
                                             }
+                                        </td>
+                                        <td>
+                                            <div className="flex justify-center items-center w-full gap-1">
+                                                <Button
+                                                    className="bg-[#000000] p-1 rounded-full text-[#ffffff] text-[11px] font-semibold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
+                                                    childs={
+                                                        <FaRegStickyNote className="text-md"/>
+                                                    }
+                                                    title="Note"
+                                                    click={()=>{get_all_note(d.id)}}
+                                                />
+                                            </div>
+                                            
                                         </td>
                                         <td className="p-2 text-center font-bold text-[#000000] text-[11px] overflow-scroll">
                                             <div className="flex justify-center items-center w-full gap-1">
