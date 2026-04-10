@@ -97,6 +97,11 @@ function Home(){
                                             />
                                             <Button
                                                 className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
+                                                childs="Statistics"
+                                                click={()=>{nav("/statistics")}}
+                                            />
+                                            <Button
+                                                className="font-semibold hover:scale-105 transition ease-in-out text-[#FFFFFF] bg-[#000000] px-6 py-2 rounded-lg shadow-2xl"
                                                 childs="Change password"
                                                 click={()=>{nav("/changepass")}}
                                             />
