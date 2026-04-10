@@ -1,0 +1,41 @@
+*{
+    box-sizing: border-box;
+    margin:0;
+    user-select: none;
+    scroll-behavior: smooth;
+    font-optical-sizing: auto;
+}
+
+body{
+    background-color: white;
+    font-family: "Roboto", sans-serif;
+}
+
+a{
+    text-decoration: none !important;
+}
+
+*::-webkit-scrollbar{
+    display: none;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    display: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield; /* Firefox */
+}
+
+ul{
+    list-style: none;
+}
+
+.bg_base{
+    background-color: #3b82f6;
+}
+
+.color_base{
+    color: #3b82f6;
+}
