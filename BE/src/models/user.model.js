@@ -3,6 +3,7 @@ const { prisma } = require("../config/connectSql");
 const { ModDTO } = require("../DTO/user/ModDTO");
 const { roleMappingRaw } = require("../mapping/mapping");
 const { ModPassDTO } = require("../DTO/user/ModPassDTO");
+const Hashtool = require("../security/HashTool");
 const { NewDTO } = require('../DTO/user/NewDTO');
 
 class userModel{
@@ -54,6 +55,8 @@ class userModel{
                 })
             }
             
+            NewData.pass = await new Hashtool().Hash(NewData.pass);
+
             const newres = await prisma.user.create({
                 data:{
                     ...NewData,
@@ -261,16 +264,17 @@ class userModel{
 
             const userData = await prisma.user.findUnique({
                 where:{
-                    id: modPass.id,
-                    pass: modPass.oldPass
+                    id: modPass.id
                 }
             })
 
-            if(userData.pass !== modPass.oldPass){
+            if(!await new Hashtool().CompareHash(userData.pass, modPass.oldPass)){
                 return res.status(401).send({
                     "message" : "Unauthorized!",
                 })
             }
+
+            modPass.newPass = await new Hashtool().Hash(modPass.newPass);
 
             const userDataMod = await prisma.user.update({
                 where:{
@@ -317,7 +321,9 @@ class userModel{
                 ModData.role = 2;
             }
 
-            if(!ModData.pass){
+            if(ModData.pass){
+                ModData.pass = await new Hashtool().Hash(ModData.pass)
+            }else{
                 delete ModData.pass
             }
 

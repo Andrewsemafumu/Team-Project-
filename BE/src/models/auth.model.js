@@ -1,3 +1,4 @@
+const Hashtool = require("../security/HashTool")
 const { prisma } = require("../config/connectSql");
 
 class authModel{
@@ -5,26 +6,24 @@ class authModel{
         try{
             const valid_phone = await prisma.user.findFirst(
                 {
-                    where: {
-                        phone   : loginData.email_phone,
-                        pass    : loginData.pass
-                    },
+                    where: {phone   : loginData.email_phone},
                 }) || null;
             
             const valid_email = await prisma.user.findFirst(
                 {
-                    where: {
-                        mail    : loginData.email_phone,
-                        pass    : loginData.pass
-                    },
+                    where: {mail    : loginData.email_phone},
                 }) || null;
 
             if(valid_phone){
-                return valid_phone;
+                if(await new Hashtool().CompareHash(valid_phone.pass, loginData.pass)){
+                    return valid_phone;
+                }
             }
 
             if(valid_email){
-                return valid_email;
+                if(await new Hashtool().CompareHash(valid_email.pass , loginData.pass)){
+                    return valid_email;
+                }
             }
 
             return null;

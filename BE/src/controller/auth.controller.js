@@ -3,6 +3,7 @@ const {roleMapping, roleMappingRaw} = require("../mapping/mapping");
 const { LoginDTO } = require("../DTO/auth/LoginDTO");
 const { RegisterDTO } = require("../DTO/auth/RegisterDTO");
 const authModel = require("../models/auth.model");
+const Hashtool = require("../security/HashTool");
 
 class authController{
     async login(req, res){
@@ -42,6 +43,7 @@ class authController{
         try{
             const registerData = RegisterDTO(req);
             if(!await new authModel().checkExist(registerData)){
+                registerData.pass = await new Hashtool().Hash(registerData.pass);
                 const data = await new authModel().register(registerData);
                 if(data){
                     res.status(200).send({
