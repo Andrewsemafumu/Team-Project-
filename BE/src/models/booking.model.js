@@ -534,6 +534,124 @@ class bookingModel{
         }
     }
 
+    async today_report(req,res){
+        try{
+            var today = new Date();
+            var start_today = `${today.getFullYear()}-${today.getMonth()+1 > 10 ? today.getMonth()+1 : `0${today.getMonth()+1}`}-${today.getDate()}T00:00:00.000Z`
+            var end_today = `${today.getFullYear()}-${today.getMonth()+1 > 10 ? today.getMonth()+1 : `0${today.getMonth()+1}`}-${today.getDate()}T23:59:59.000Z`
+
+            const booked_booking = await prisma.booking.count({
+                where:{
+                    status: 1,
+                    bookingDate: {
+                        gte: start_today,
+                        lte: end_today
+                    }
+                },
+            })
+
+            const checkin_booking = await prisma.booking.count({
+                where:{
+                    status: 2,
+                    bookingDate: {
+                        gte: start_today,
+                        lte: end_today
+                    }
+                },
+            })
+
+            const completed_booking = await prisma.booking.count({
+                where:{
+                    status: 3,
+                    bookingDate: {
+                        gte: start_today,
+                        lte: end_today
+                    }
+                },
+            })
+
+            const doctor_created_today_booking = await prisma.user.count({
+                where:{
+                    role: 2,
+                    date01: {
+                        gte: start_today,
+                        lte: end_today
+                    }
+                },
+            })
+
+            const reception_created_today_booking = await prisma.user.count({
+                where:{
+                    role: 1,
+                    date01: {
+                        gte: start_today,
+                        lte: end_today
+                    }
+                },
+            })
+
+            const patient_created_today_booking = await prisma.user.count({
+                where:{
+                    role: 3,
+                    date01: {
+                        gte: start_today,
+                        lte: end_today
+                    }
+                },
+            })
+
+            const doctor_have_specialty = await prisma.user.count({
+                where:{
+                    role: 2,
+                    specialty: {
+                        isNot: null
+                    }
+                },
+            })
+
+            const doctor_dont_have_specialty = await prisma.user.count({
+                where:{
+                    role: 2,
+                    specialty: {
+                        is: null
+                    }
+                },
+            })
+
+            const count_specialty = await prisma.specialty.count()
+
+            const count_specialty_create_today = await prisma.specialty.count({
+                where:{
+                    date01: {
+                        gte: start_today,
+                        lte: end_today
+                    }
+                }
+            })
+            
+            res.status(200).send({
+                "message": "Success!",
+                "booked": booked_booking,
+                "checkin": checkin_booking,
+                "complete": completed_booking,
+                "doctor_create_today": doctor_created_today_booking,
+                "patient_create_today": patient_created_today_booking,
+                "reception_create_today": reception_created_today_booking,
+                "doctor_have_specialty": doctor_have_specialty,
+                "doctor_dont_have_specialty": doctor_dont_have_specialty,
+                "specialty": count_specialty,
+                "specialty_create_today": count_specialty_create_today
+            })
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+
+
+    }
+
 }
 
 module.exports = bookingModel;

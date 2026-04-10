@@ -90,6 +90,17 @@ class bookingController{
         }
     }
 
+    async today_report(req, res){
+        try{
+            await new bookingModel().today_report(req, res);
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
 }
 
 module.exports = bookingController;

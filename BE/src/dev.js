@@ -11,6 +11,7 @@ const authController = require("./controller/auth.controller");
 const bookingController = require("./controller/booking.controller");
 const specialtyController = require("./controller/specialty.controller");
 const UserController = require("./controller/user.controller");
+const recordController = require("./controller/record.controller");
 
 require("./config/connectSql")
 
@@ -94,10 +95,24 @@ app.put(ROOT_URL + "/booking", new bookingController().edit);
 // route for delete booking http://localhost:3000/api/v1/smartcare/booking method delete
 app.delete(ROOT_URL + "/booking", new bookingController().delete);
 
+// route for get a diagnose http://localhost:3000/api/v1/smartcare/diagnose method get
+app.get(ROOT_URL + "/diagnose", new recordController().get);
+
+// route for get all diagnose history of one patient http://localhost:3000/api/v1/smartcare/diagnose/history method get
+app.get(ROOT_URL + "/diagnose/history", new recordController().get_history);
+
+// route for create a diagnose http://localhost:3000/api/v1/smartcare/diagnose method post
+app.post(ROOT_URL + "/diagnose", new recordController().create);
+
+// route for update a diagnose http://localhost:3000/api/v1/smartcare/diagnose method put
+app.put(ROOT_URL + "/diagnose", new recordController().update);
+
 
 
 //check role login already
 app.use(middleware.checkRole(["ADMIN", "RECEPTION", "DOCTOR"]));
+
+
 
 
 
@@ -118,6 +133,9 @@ app.delete(ROOT_URL + "/user", new UserController().delete);
 
 // route for mod user http://localhost:3000/api/v1/smartcare/user method put
 app.put(ROOT_URL + "/user", new UserController().edit);
+
+// route for get today report booking http://localhost:3000/api/v1/smartcare/todayreport method get
+app.get(ROOT_URL + "/todayreport", new bookingController().today_report);
 
 
 
