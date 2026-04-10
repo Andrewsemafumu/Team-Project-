@@ -69,6 +69,7 @@ export default function Booking_client(){
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Patient Info</th>
                             <th className="p-2 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Date</th>
                             <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Status</th>
+                            <th className="py-2 px-5 border-2 border-[#000000] overflow-scroll  bg-[black] text-[#ffffff]">Action</th>
                         </thead>
                         <tbody >
                             {
@@ -94,6 +95,19 @@ export default function Booking_client(){
                                                 }
                                                 click={()=>{}}
                                             />
+                                        </td>
+                                        <td className="font-bold text-[#000000] text-[11px] overflow-scroll">
+                                            <div className="flex justify-center items-center w-full gap-1 p-3">
+                                                <Button
+                                                    disabled={d.status === 3 ? true : false}
+                                                    className="bg-[red] p-2 rounded-full text-[#ffffff] text-[11px] font-semibold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
+                                                    childs={
+                                                        <MdDelete className="text-lg"/>
+                                                    }
+                                                    title="Delete"
+                                                    click={()=>delete_booking(d.id)}
+                                                />
+                                            </div>
                                         </td>
                                     </tr>
                                 })

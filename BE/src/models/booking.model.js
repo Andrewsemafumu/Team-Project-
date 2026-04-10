@@ -419,6 +419,14 @@ class bookingModel{
                 })
             }
 
+            if(req.u.BASEROLE === "CLIENT"){
+                if(req.u.BASEID !== data.clientID){
+                    return res.status(403).send({
+                        "message": "You don't have any permission for this activity!"
+                    })
+                }
+            }
+
             const res_new = await prisma.booking.update({
                 where : {
                     id: id
@@ -468,6 +476,23 @@ class bookingModel{
                         where: {
                             id: bookingID,
                             doctorID: id
+                        },
+                        select: {
+                            status: true
+                        }
+                    })
+                }
+            }else if(req.u.BASEROLE === "CLIENT"){
+                if(!id){
+                    return res.status(400).send({
+                        "message": "Bad request!"
+                    })
+                }
+                if(req.u.BASEID === id){
+                    booking = await prisma.booking.findUnique({
+                        where: {
+                            id: bookingID,
+                            clientID: id
                         },
                         select: {
                             status: true

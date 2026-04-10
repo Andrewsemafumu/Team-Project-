@@ -88,16 +88,16 @@ app.get(ROOT_URL + "/booking/doctor/all", new bookingController().getallfor_doct
 // route for create booking http://localhost:3000/api/v1/smartcare/booking method post
 app.post(ROOT_URL + "/booking", new bookingController().create);
 
-
-
-//check role login already
-app.use(middleware.checkRole(["ADMIN", "RECEPTION", "DOCTOR"]));
-
 // route for edit booking http://localhost:3000/api/v1/smartcare/booking method put
 app.put(ROOT_URL + "/booking", new bookingController().edit);
 
 // route for delete booking http://localhost:3000/api/v1/smartcare/booking method delete
 app.delete(ROOT_URL + "/booking", new bookingController().delete);
+
+
+
+//check role login already
+app.use(middleware.checkRole(["ADMIN", "RECEPTION", "DOCTOR"]));
 
 
 

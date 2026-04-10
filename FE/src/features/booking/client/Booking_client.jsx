@@ -9,7 +9,7 @@ import InputDateTime from "../../../components/InputDate";
 import $ from "jquery";
 import { TbProgressCheck } from "react-icons/tb";
 import { FiLoader } from "react-icons/fi";
-import { MdEdit, MdOutlineDone } from "react-icons/md";
+import { MdDelete, MdEdit, MdOutlineDone } from "react-icons/md";
 
 export default function Booking_client(){
 
@@ -221,6 +221,32 @@ export default function Booking_client(){
         })
     }
 
+    async function delete_booking(id){
+        if(confirm("Are you sure you want to delete this booking?")){
+            $.ajax({
+                url    : utils.URL_BE_BASE + "booking" ,
+                headers: {
+                    tokenizer: localStorage.getItem("%UT%")
+                },
+                crossDomain: true,
+                type   : "DELETE",
+                data:{
+                    id: utils.UID,
+                    bookingID: id
+                },
+                timeout: 10000,
+                success: (d)=>{
+                    alert(d.message)
+                    getall_booking()
+                },
+                error  : (e)=>{
+                    console.log(e);
+                    alert(e.responseJSON?.message)
+                },
+            })
+        }
+    }
+
     function init_timelist_for_update_booking(date, docID, booked_time){
         const start = new Date(`${date}T07:00:00`).toISOString()
         const end = new Date(`${date}T17:30:00`).toISOString()
@@ -258,7 +284,6 @@ export default function Booking_client(){
             },
         })
     }
-
     function cancel_update(){
         setBookingID(null);
         setBooking({
@@ -269,6 +294,72 @@ export default function Booking_client(){
             clientID : "",
             status : "",
             doctorID : ""
+        })
+    }
+
+    function update(){
+        if(!bookingID){
+            alert("There is no booking to update!");
+            return 
+        }
+
+        if(booking.date){
+            if(booking.time){
+                booking.datetime = new Date(`${booking.date}T${booking.time}`).toISOString();
+            }else{
+                alert("Please choose booking time!");
+                return;
+            }
+        }else{
+            alert("Please choose booking date!");
+            return;
+        }
+
+        if(!booking.title || booking.title === "" || booking.title === null){
+            alert("Please enter booking title!");
+            return;
+        }
+
+        if(!booking.clientID || booking.clientID === ""){
+            alert("Please choose patient!");
+            return;
+        }
+
+        if(!booking.doctorID || booking.doctorID === ""){
+            alert("Please choose doctor!");
+            return;
+        }
+
+        $.ajax({
+            url    : utils.URL_BE_BASE + "booking" ,
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "PUT",
+            data   : {
+                id: bookingID,
+                ...booking
+            },
+            timeout: 10000,
+            success: (d)=>{
+                alert(d.message);
+                setBooking({
+                    title: "",
+                    descript: "",
+                    date: null,
+                    time: null,
+                    clientID : "",
+                    status : "",
+                    doctorID : ""
+                });
+                setBookingID(null);
+                getall_booking();
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
         })
     }
 
@@ -353,6 +444,14 @@ export default function Booking_client(){
                                                     }
                                                     click={()=>get_booking(d.id)}
                                                 />
+                                                <Button
+                                                    disabled={d.status === 3 ? true : false}
+                                                    className="bg-[red] p-1 rounded-full text-[#ffffff] text-[11px] font-semibold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
+                                                    childs={
+                                                        <MdDelete/>
+                                                    }
+                                                    click={()=>delete_booking(d.id)}
+                                                />
                                             </div>
                                         </td>
                                     </tr>
@@ -410,6 +509,11 @@ export default function Booking_client(){
                         bookingID 
                         ?
                         <>
+                            <Button
+                                className="w-full h-12 bg-[black] text-[#ffffff] rounded-lg text-lg font-bold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
+                                childs={"Update"}
+                                click={()=>{update()}}
+                            />
                             <Button
                                 className="w-full h-12 bg-[black] text-[#ffffff] rounded-lg text-lg font-bold hover:bg-[#ffffff] hover:text-black hover:text-shadow-2xs transition-all duration-300"
                                 childs={"Cancel"}
