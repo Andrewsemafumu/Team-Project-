@@ -1,0 +1,14 @@
+/* vendor, CDN */
+@import url("./stylesheet/vendor/vendor.css");
+
+/* config, import,... */
+@import url("./stylesheet/base/base.css");
+
+/* font */
+@import url("./stylesheet/components/font.css");
+
+/* custom checkbox 1 */
+@import url("./stylesheet/components/checkbox1.css");
+
+/* tailwind config */
+@import "tailwindcss";
