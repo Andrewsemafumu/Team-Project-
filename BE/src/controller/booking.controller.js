@@ -1,0 +1,62 @@
+const bookingModel = require("../models/booking.model");
+
+class bookingController{
+
+    async get(req, res){
+        try{
+            await new bookingModel().get(req, res);
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
+    async getall(req, res){
+        try{
+            await new bookingModel().getall(req, res);
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
+    async getallfor_patient(req, res){
+        try{
+            await new bookingModel().getallfor_patient(req, res);
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
+    async getallfor_doctor(req, res){
+        try{
+            await new bookingModel().getallfor_doctor(req, res);
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
+    async create(req, res){
+        try{
+            await new bookingModel().create(req, res);
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
+}
+
+module.exports = bookingController;

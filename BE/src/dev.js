@@ -8,6 +8,7 @@ const port = process.env.PORT
 const cors = require("cors");
 const middleware = require("./middleware/middelware");
 const authController = require("./controller/auth.controller");
+const bookingController = require("./controller/booking.controller");
 const specialtyController = require("./controller/specialty.controller");
 const UserController = require("./controller/user.controller");
 
@@ -72,6 +73,17 @@ app.put(ROOT_URL + "/account/change", new UserController().edit);
 // route for change password http://localhost:3000/api/v1/smartcare/account/changepass method post
 app.put(ROOT_URL + "/account/changepass", new UserController().edit_pass);
 
+// route for get a booking http://localhost:3000/api/v1/smartcare/booking method get
+app.get(ROOT_URL + "/booking", new bookingController().get);
+
+// route for get all booking base on clientID http://localhost:3000/api/v1/smartcare/booking/patient/all method get
+app.get(ROOT_URL + "/booking/patient/all", new bookingController().getallfor_patient);
+
+// route for get all booking base on doctorID http://localhost:3000/api/v1/smartcare/booking/doctor/all method get
+app.get(ROOT_URL + "/booking/doctor/all", new bookingController().getallfor_doctor);
+
+// route for create booking http://localhost:3000/api/v1/smartcare/booking method post
+app.post(ROOT_URL + "/booking", new bookingController().create);
 
 
 
@@ -92,6 +104,9 @@ app.get("/privaterole", (req, res)=>{
 //check role admin and reception already
 app.use(middleware.checkRole(["ADMIN", "RECEPTION"]));
 
+// route for get all booking http://localhost:3000/api/v1/smartcare/booking/all method get
+app.get(ROOT_URL + "/booking/all", new bookingController().getall);
+
 // route for get user http://localhost:3000/api/v1/smartcare/user method get
 app.get(ROOT_URL + "/user", new UserController().get);
 
@@ -103,7 +118,6 @@ app.delete(ROOT_URL + "/user", new UserController().delete);
 
 // route for mod user http://localhost:3000/api/v1/smartcare/user method put
 app.put(ROOT_URL + "/user", new UserController().edit);
-
 
 
 
@@ -121,6 +135,7 @@ app.put(ROOT_URL + "/specialty", new specialtyController().edit);
 
 // route for delete specialty http://localhost:3000/api/v1/smartcare/specialty method delete
 app.delete(ROOT_URL + "/specialty", new specialtyController().delete);
+
 
 
 

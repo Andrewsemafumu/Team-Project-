@@ -1,4 +1,6 @@
 const { prisma } = require("../config/connectSql");
+const loginModel = require("../models/auth.model");
+const Hashtool = require("../security/HashTool");
 const { roleMappingRaw } = require("../mapping/mapping");
 
 class middelware{
