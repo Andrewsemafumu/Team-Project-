@@ -68,6 +68,28 @@ class bookingController{
         }
     }
 
+    async edit(req, res){
+        try{
+            await new bookingModel().mod(req, res);
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
+    async delete(req, res){
+        try{
+            await new bookingModel().delete(req, res);
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
 }
 
 module.exports = bookingController;

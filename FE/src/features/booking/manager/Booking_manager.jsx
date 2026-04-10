@@ -7,7 +7,7 @@ import utils from "../../../utils/utils";
 import InputSelect from "../../../components/InputSelect";
 import $ from "jquery";
 import InputDate from "../../../components/InputDate";
-import { MdOutlineDone, MdEdit } from "react-icons/md";
+import { MdOutlineDone, MdEdit, MdDelete } from "react-icons/md";
 import { FiLoader } from "react-icons/fi";
 import { TbProgressCheck } from "react-icons/tb";
 
@@ -35,7 +35,6 @@ export default function Booking_manager(){
             getall_patient();
             getall_doctor();
             getall_booking();
-            setTimeList(utils.booking_time_json_array())
         }
     }
 
@@ -81,6 +80,7 @@ export default function Booking_manager(){
                 ["time"] : null,
                 [e.target.name] : e.target.value ? e.target.value : null
             });
+            init_timelist(e.target.value);
         }else{
             setBooking({
                 ...booking,
@@ -88,6 +88,84 @@ export default function Booking_manager(){
             });
         }
        
+    }
+
+    function init_timelist(date){
+        const start = new Date(`${date}T07:00:00`).toISOString()
+        const end = new Date(`${date}T17:30:00`).toISOString()
+        $.ajax({
+            url    : utils.URL_BE_BASE + "doctor/freetime",
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "GET",
+            data   : {
+                docID:booking.doctorID*1,
+                start: start,
+                end: end
+            },
+            timeout: 10000,
+            success: (d)=>{
+                console.table(d.data);
+                if(d.data){
+                    var timelist = utils.booking_time_json_array()
+                    for(var b of d.data){
+                        const date = new Date(b.bookingDate);
+                        const time = date.getHours().toString().padStart(2,'0') + ":" + date.getMinutes().toString().padStart(2,'0');
+                        if(bookingID){
+                            timelist = timelist.filter(t => (t.value !== time && t.value === booking.time));
+                        }else{
+                            timelist = timelist.filter(t => t.value !== time);
+                        }
+                        
+                    }
+                    setTimeList(timelist)
+                }
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
+        })
+    }
+
+    function init_timelist_for_update_booking(date, docID, booked_time){
+        const start = new Date(`${date}T07:00:00`).toISOString()
+        const end = new Date(`${date}T17:30:00`).toISOString()
+        $.ajax({
+            url    : utils.URL_BE_BASE + "doctor/freetime",
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "GET",
+            data   : {
+                docID:docID*1,
+                start: start,
+                end: end
+            },
+            timeout: 10000,
+            success: (d)=>{
+                console.table(d.data);
+                if(d.data){
+                    var timelist = utils.booking_time_json_array()
+                    for(var b of d.data){
+                        const date = new Date(b.bookingDate);
+                        const time = date.getHours().toString().padStart(2,'0') + ":" + date.getMinutes().toString().padStart(2,'0');
+                        timelist = timelist.filter(t => (t.value !== time));
+                        if(utils.Booking_time_to_id(booked_time)){
+                            timelist.push({id: utils.Booking_time_to_id(booked_time), value: booked_time})
+                        }
+                    }
+                    setTimeList(timelist)
+                }
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
+        })
     }
     
     function getall_patient(){
@@ -148,6 +226,66 @@ export default function Booking_manager(){
             clientID : "",
             status : "",
             doctorID : ""
+        })
+    }
+
+    function create(){
+
+        if(booking.date){
+            if(booking.time){
+                booking.datetime = new Date(`${booking.date}T${booking.time}`).toISOString();
+            }else{
+                alert("Please choose booking time!");
+                return;
+            }
+        }else{
+            alert("Please choose booking date!");
+            return;
+        }
+
+        if(!booking.title || booking.title === "" || booking.title === null){
+            alert("Please enter booking title!");
+            return;
+        }
+
+        if(!booking.clientID || booking.clientID === ""){
+            alert("Please choose patient!");
+            return;
+        }
+
+        if(!booking.doctorID || booking.doctorID === ""){
+            alert("Please choose doctor!");
+            return;
+        }
+
+        $.ajax({
+            url    : utils.URL_BE_BASE + "booking" ,
+            headers: {
+                tokenizer: localStorage.getItem("%UT%")
+            },
+            crossDomain: true,
+            type   : "POST",
+            data   : {
+                ...booking
+            },
+            timeout: 10000,
+            success: (d)=>{
+                setBooking({
+                    title: "",
+                    descript: "",
+                    date: null,
+                    time: null,
+                    clientID : "",
+                    status : "",
+                    doctorID : ""
+                });
+                alert(d.message);
+                getall_booking();
+            },
+            error  : (e)=>{
+                console.log(e);
+                alert(e.responseJSON?.message)
+            },
         })
     }
 
@@ -289,8 +427,8 @@ export default function Booking_manager(){
                                 ]
                             }
                         />
-                        <InputDate onChange={(e)=>change(e)} value={booking.date} inputName="date" InputclassName="bg-[#e0e0e0] text-[black] border-none focus:border-[#00000082] h-full text-sm" LabelclassName="text-[black] peer-placeholder-shown:text-[black]" label="From" />
-                        <InputSelect value={ booking.time ? utils.Booking_time_to_id(booking.time) : null} onChange={(e)=>{change(e)}} inputName="time" InputclassName="h-full text-sm text-lg bg-[#e9e9e9] px-3 py-5 text-[black] border-none focus:border-[#00000082]" 
+                        <InputDate disabled={booking.doctorID ? false : true} onChange={(e)=>change(e)} value={booking.date} inputName="date" InputclassName="bg-[#e0e0e0] text-[black] border-none focus:border-[#00000082] h-full text-sm" LabelclassName="text-[black] peer-placeholder-shown:text-[black]" label="From" />
+                        <InputSelect disabled={booking.doctorID && booking.date ? false : true} value={ booking.time ? utils.Booking_time_to_id(booking.time) : null} onChange={(e)=>{change(e)}} inputName="time" InputclassName="h-full text-sm text-lg bg-[#e9e9e9] px-3 py-5 text-[black] border-none focus:border-[#00000082]" 
                             options = {
                                 time.length > 0
                                     ? [

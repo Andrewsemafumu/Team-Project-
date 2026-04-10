@@ -382,6 +382,133 @@ class bookingModel{
         }
     }
 
+    async mod(req, res){
+        try{
+            const data = ModDTO(req);
+            const id = data.id;
+            if(!id){
+                return res.status(400).send({
+                    "message": "Bad request!"
+                })
+            }
+
+            delete data.id;
+
+            if(!data.clientID){
+                return res.status(400).send({
+                    "message": "Bad request!"
+                })
+            }
+
+            if(!data.doctorID || !data.clientID || isNaN(data.clientID) || isNaN(data.clientID)){
+                return res.status(400).send({
+                    "message": "Bad request!"
+                })
+            }
+
+            const exist_booking = await prisma.booking.findMany({
+                where: {
+                    bookingDate: data.bookingDate,
+                    doctorID: data.doctorID,
+                }
+            });
+
+            if(exist_booking.length){
+                return res.status(409).send({
+                    "message": "Booking conflict!"
+                })
+            }
+
+            const res_new = await prisma.booking.update({
+                where : {
+                    id: id
+                },
+                data:{
+                    ...data,
+                }
+            });
+
+            if(res_new.id){
+                res.status(200).send({
+                    "message": "Success!"
+                })
+            }else{
+                res.status(409).send({
+                    "message": "Cannot modify booking!"
+                })
+            }
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+    
+    async delete(req, res){
+        try{
+            const bookingID = req.body.bookingID ? !isNaN(req.body.bookingID) ? req.body.bookingID * 1 : null: null; 
+            const id = req.body.id ? !isNaN(req.body.id) ? req.body.id * 1 : null: null; 
+            if(!bookingID){
+                return res.status(400).send({
+                    "message": "Bad request!"
+                })
+            }
+
+            var booking = null;
+
+            if(req.u.BASEROLE === "DOCTOR"){
+                if(!id){
+                    return res.status(400).send({
+                        "message": "Bad request!"
+                    })
+                }
+                if(req.u.BASEID === id){
+                    booking = await prisma.booking.findUnique({
+                        where: {
+                            id: bookingID,
+                            doctorID: id
+                        },
+                        select: {
+                            status: true
+                        }
+                    })
+                }
+            }else{
+                booking = await prisma.booking.findUnique({
+                    where: {
+                        id: bookingID,
+                    },
+                    select: {
+                        status: true
+                    }
+                })
+            }
+
+
+            if(booking){
+                await prisma.booking.delete({
+                    where:{
+                        id: bookingID
+                    }
+                });
+                res.status(200).send({
+                    "message": "Success!",
+                })
+            }else{
+                res.status(404).send({
+                    "message": "Booking not exist!",
+                })
+            }
+            
+        }catch(err){
+            console.error(err);
+            res.status(500).send({
+                "message": "Server error!"
+            })
+        }
+    }
+
 }
 
 module.exports = bookingModel;
