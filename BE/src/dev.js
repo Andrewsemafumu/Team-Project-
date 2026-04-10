@@ -12,6 +12,7 @@ const bookingController = require("./controller/booking.controller");
 const specialtyController = require("./controller/specialty.controller");
 const UserController = require("./controller/user.controller");
 const recordController = require("./controller/record.controller");
+const noteController = require("./controller/note.controller");
 
 require("./config/connectSql")
 
@@ -106,6 +107,21 @@ app.post(ROOT_URL + "/diagnose", new recordController().create);
 
 // route for update a diagnose http://localhost:3000/api/v1/smartcare/diagnose method put
 app.put(ROOT_URL + "/diagnose", new recordController().update);
+
+// route for get all note of booking http://localhost:3000/api/v1/smartcare/note/all method get
+app.get(ROOT_URL + "/note/all", new noteController().get_all);
+
+// route for get note of booking http://localhost:3000/api/v1/smartcare/note method get
+app.get(ROOT_URL + "/note", new noteController().get);
+
+// route for add note http://localhost:3000/api/v1/smartcare/note method post
+app.post(ROOT_URL + "/note", new noteController().add);
+
+// route for update note http://localhost:3000/api/v1/smartcare/note method put
+app.put(ROOT_URL + "/note", new noteController().update);
+
+// route for delete note http://localhost:3000/api/v1/smartcare/note method delete
+app.delete(ROOT_URL + "/note", new noteController().delete);
 
 
 
